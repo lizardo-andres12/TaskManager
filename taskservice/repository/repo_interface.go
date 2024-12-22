@@ -7,12 +7,12 @@ type Repo[T models.Record] interface {
 	CreateNew(record *T) error
 
 	// Read
-	GetByID(id uint64) (*T, error)
-	GetAll(limit int, ids ...uint64) ([]T, error)
+	GetByID(ids ...uint64) (*T, error) // variadic because of dual primary key record
+	GetAll(limit int, id uint64) ([]T, error)
 
 	// Update
 	UpdateExisting(id uint64, record *T) error
 
 	// Delete
-	DeleteByID(id uint64)
+	DeleteByID(ids ...uint64) error // variadic because of dual primary key record
 }

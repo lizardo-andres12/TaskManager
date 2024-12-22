@@ -26,24 +26,24 @@ func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
 	return nil
 }
 
-func (taskrepo *TaskRepo) GetByID(id uint64) (*models.Task, error) {
+func (taskrepo *TaskRepo) GetByID(ids ...uint64) (*models.Task, error) {
 	taskrepo.mu.Lock()
 	defer taskrepo.mu.Unlock()
 	var task models.Task
 
-	row := taskrepo.db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
+	row := taskrepo.db.QueryRow("SELECT * FROM tasks WHERE id = ?", ids[0])
 	if err := row.Scan(&task.ID, &task.Title, &task.Priority, &task.UserID, &task.CreatedAt); err != nil {
 		return nil, err
 	}
 	return &task, nil
 }
 
-func (taskrepo *TaskRepo) GetAll(limit int, ids ...uint64) ([]models.Task, error) {
+func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 	taskrepo.mu.Lock()
 	defer taskrepo.mu.Unlock()
 	var tasks []models.Task
 
-	rows, err := taskrepo.db.Query("SELECT * FROM tasks WHERE userId = ? LIMIT ?", ids[0], limit)
+	rows, err := taskrepo.db.Query("SELECT * FROM tasks WHERE userId = ? LIMIT ?", id, limit)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (taskrepo *TaskRepo) DeleteByID(id uint64) error {
 	taskrepo.mu.Lock()
 	defer taskrepo.mu.Unlock()
 
-	_, err := taskrepo.db.Exec("UPDATE FROM tasks WHERE id = ?", id)
+	_, err := taskrepo.db.Exec("DELETE FROM tasks WHERE id = ?", id)
 	if err != nil {
 		return err
 	}
