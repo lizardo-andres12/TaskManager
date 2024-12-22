@@ -2,13 +2,11 @@ package repository
 
 import (
 	"database/sql"
-	"sync"
 	"taskservice/models"
 )
 
 type TaskRepo struct {
 	db *sql.DB
-	mu sync.Mutex
 }
 
 func NewTaskRepo(db *sql.DB) *TaskRepo {
@@ -16,9 +14,6 @@ func NewTaskRepo(db *sql.DB) *TaskRepo {
 }
 
 func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
-	taskrepo.mu.Lock()
-	defer taskrepo.mu.Unlock()
-
 	_, err := taskrepo.db.Exec("INSERT INTO tasks (Title, Priority, UserID, CreatedAt) VALUES (?, ?, ?, ?)", record.Title, record.Priority, record.UserID, record.CreatedAt)
 	if err != nil {
 		return err
@@ -27,8 +22,6 @@ func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
 }
 
 func (taskrepo *TaskRepo) GetByID(ids ...uint64) (*models.Task, error) {
-	taskrepo.mu.Lock()
-	defer taskrepo.mu.Unlock()
 	var task models.Task
 
 	row := taskrepo.db.QueryRow("SELECT * FROM tasks WHERE id = ?", ids[0])
@@ -39,8 +32,6 @@ func (taskrepo *TaskRepo) GetByID(ids ...uint64) (*models.Task, error) {
 }
 
 func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
-	taskrepo.mu.Lock()
-	defer taskrepo.mu.Unlock()
 	var tasks []models.Task
 
 	rows, err := taskrepo.db.Query("SELECT * FROM tasks WHERE userId = ? LIMIT ?", id, limit)
@@ -63,9 +54,6 @@ func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 }
 
 func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error {
-	taskrepo.mu.Lock()
-	defer taskrepo.mu.Unlock()
-
 	_, err := taskrepo.db.Exec("UPDATE tasks SET title = ?, priority = ? WHERE id = ?", record.Title, record.Priority, id)
 	if err != nil {
 		return err
@@ -74,9 +62,6 @@ func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error {
 }
 
 func (taskrepo *TaskRepo) DeleteByID(id uint64) error {
-	taskrepo.mu.Lock()
-	defer taskrepo.mu.Unlock()
-
 	_, err := taskrepo.db.Exec("DELETE FROM tasks WHERE id = ?", id)
 	if err != nil {
 		return err
