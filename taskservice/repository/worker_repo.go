@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"taskservice/models"
+	"taskservice/repository/models"
 )
 
 type WorkerRepo struct {

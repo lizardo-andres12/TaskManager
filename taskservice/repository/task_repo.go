@@ -1,20 +1,22 @@
+// --TODO-- implement method GetAllAssigned
+// use query: select * from tasks t join workers w on t.taskId = w.taskId where w.userId=?;
 package repository
 
 import (
 	"database/sql"
-	"taskservice/models"
+	"taskservice/repository/models"
 )
 
 type TaskRepo struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 func NewTaskRepo(db *sql.DB) *TaskRepo {
-	return &TaskRepo{db: db}
+	return &TaskRepo{DB: db}
 }
 
 func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
-	_, err := taskrepo.db.Exec("INSERT INTO tasks (Title, Priority, UserID, CreatedAt) VALUES (?, ?, ?, ?)", record.Title, record.Priority, record.UserID, record.CreatedAt)
+	_, err := taskrepo.DB.Exec("INSERT INTO tasks (Title, Priority, UserID, CreatedAt) VALUES (?, ?, ?, ?)", record.Title, record.Priority, record.UserID, record.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -24,17 +26,18 @@ func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
 func (taskrepo *TaskRepo) GetByID(ids ...uint64) (*models.Task, error) {
 	var task models.Task
 
-	row := taskrepo.db.QueryRow("SELECT * FROM tasks WHERE id = ?", ids[0])
-	if err := row.Scan(&task.ID, &task.Title, &task.Priority, &task.UserID, &task.CreatedAt); err != nil {
+	row := taskrepo.DB.QueryRow("SELECT * FROM tasks WHERE taskId = ?", ids[0])
+	if err := row.Scan(&task.TaskID, &task.Title, &task.Priority, &task.UserID, &task.CreatedAt); err != nil {
 		return nil, err
 	}
 	return &task, nil
 }
 
+// Gets all tasks CREATED by userId
 func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 	var tasks []models.Task
 
-	rows, err := taskrepo.db.Query("SELECT * FROM tasks WHERE userId = ? LIMIT ?", id, limit)
+	rows, err := taskrepo.DB.Query("SELECT * FROM tasks WHERE userId = ? LIMIT ?", id, limit)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -42,7 +45,7 @@ func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 
 	for rows.Next() {
 		var task models.Task
-		if err := rows.Scan(&task.ID, &task.Title, &task.Priority, &task.UserID, &task.CreatedAt); err != nil {
+		if err := rows.Scan(&task.TaskID, &task.Title, &task.Priority, &task.UserID, &task.CreatedAt); err != nil {
 			return nil, err
 		}
 		tasks = append(tasks, task)
@@ -54,7 +57,7 @@ func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 }
 
 func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error {
-	_, err := taskrepo.db.Exec("UPDATE tasks SET title = ?, priority = ? WHERE id = ?", record.Title, record.Priority, id)
+	_, err := taskrepo.DB.Exec("UPDATE tasks SET title = ?, priority = ?, userId = ? WHERE taskId = ?", record.Title, record.Priority, record.UserID, id)
 	if err != nil {
 		return err
 	}
@@ -62,7 +65,7 @@ func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error {
 }
 
 func (taskrepo *TaskRepo) DeleteByID(id uint64) error {
-	_, err := taskrepo.db.Exec("DELETE FROM tasks WHERE id = ?", id)
+	_, err := taskrepo.DB.Exec("DELETE FROM tasks WHERE taskId = ?", id)
 	if err != nil {
 		return err
 	}
