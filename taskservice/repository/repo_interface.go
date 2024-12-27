@@ -1,6 +1,6 @@
 package repository
 
-import "taskservice/repository/models"
+import "taskservice/models"
 
 type Repo[T models.Record] interface {
 	// Create

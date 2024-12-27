@@ -1,3 +1,4 @@
+// --TODO-- add createdAt and completed fields
 package models
 
 type Worker struct {

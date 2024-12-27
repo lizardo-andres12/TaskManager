@@ -1,8 +1,9 @@
+// --TODO-- rework functions to match changes made to worker model
 package repository
 
 import (
 	"database/sql"
-	"taskservice/repository/models"
+	"taskservice/models"
 )
 
 type WorkerRepo struct {

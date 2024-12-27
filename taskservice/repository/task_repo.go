@@ -4,7 +4,7 @@ package repository
 
 import (
 	"database/sql"
-	"taskservice/repository/models"
+	"taskservice/models"
 )
 
 type TaskRepo struct {
@@ -16,7 +16,7 @@ func NewTaskRepo(db *sql.DB) *TaskRepo {
 }
 
 func (taskrepo *TaskRepo) CreateNew(record *models.Task) error {
-	_, err := taskrepo.DB.Exec("INSERT INTO tasks (Title, Priority, UserID, CreatedAt) VALUES (?, ?, ?, ?)", record.Title, record.Priority, record.UserID, record.CreatedAt)
+	_, err := taskrepo.DB.Exec("INSERT INTO tasks (Title, Priority, UserID) VALUES (?, ?, ?)", record.Title, record.Priority, record.UserID)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (taskrepo *TaskRepo) GetAll(limit int, id uint64) ([]models.Task, error) {
 	return tasks, nil
 }
 
-func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error {
+func (taskrepo *TaskRepo) UpdateExisting(id uint64, record *models.Task) error { // this function should never receive taskId not stored
 	_, err := taskrepo.DB.Exec("UPDATE tasks SET title = ?, priority = ?, userId = ? WHERE taskId = ?", record.Title, record.Priority, record.UserID, id)
 	if err != nil {
 		return err

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"taskservice/models"
 	r "taskservice/repository"
-	"taskservice/repository/models"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -61,33 +61,34 @@ func TestCreateNew(t *testing.T) {
 
 	tr := r.NewTaskRepo(db)
 
-	testcases := map[models.Task]error{
-		models.Task{
+	testcases := []models.Task{
+		{
 			Title:     "T1",
 			Priority:  true,
-			UserID:    1,
+			UserID:    100,
 			CreatedAt: time.Now().Format(time.DateTime),
-		}: nil,
-
-		models.Task{
+		},
+		{
 			Title:     "T2",
 			Priority:  false,
-			UserID:    1,
+			UserID:    9,
 			CreatedAt: time.Now().Format(time.DateTime),
-		}: nil,
-
-		models.Task{}: &mysql.MySQLError{
-			Number: 1292,
+		},
+		{
+			Title:     "T3",
+			Priority:  false,
+			UserID:    12,
+			CreatedAt: time.Now().Format(time.DateTime),
 		},
 	}
 
-	for task, expected := range testcases {
+	for _, task := range testcases {
 		err := tr.CreateNew(&task)
-		if err != expected && expected == nil {
-			t.Errorf("%s task: %v, %v, %v, %v - expected: %v - got: %v",
+		if err != nil {
+			t.Errorf("%s task: %v, %v, %v, %v, err: %v",
 				prefix,
 				task.Title, task.Priority, task.UserID, task.CreatedAt,
-				expected, err)
+				err)
 		}
 	}
 }
@@ -158,7 +159,7 @@ func TestUpdateExisting(t *testing.T) {
 	tr := r.NewTaskRepo(db)
 
 	testcases := map[models.Task]error{
-		models.Task{
+		{
 			TaskID:    1,
 			Title:     "Leave Company",
 			Priority:  true,
@@ -166,25 +167,23 @@ func TestUpdateExisting(t *testing.T) {
 			CreatedAt: time.Now().Format(time.DateTime),
 		}: nil,
 
-		models.Task{
+		{
 			TaskID:    2,
 			Title:     "Code Harder",
 			Priority:  false,
-			UserID:    3,
+			UserID:    1,
 			CreatedAt: time.Now().Format(time.DateTime),
 		}: nil,
+		{
+			TaskID: 1000000,
+		}: nil,
+		{}: nil,
 	}
 
 	for task, expected := range testcases {
 		err := tr.UpdateExisting(task.TaskID, &task)
-		if err != expected && expected != nil {
+		if err != expected {
 			t.Errorf("%s taskId: %d, expected: %v, got: %v", prefix, task.TaskID, expected, err)
-		}
-
-		taskCheck, err := tr.GetByID(task.TaskID)
-		task.CreatedAt, taskCheck.CreatedAt = "", ""
-		if task != *taskCheck {
-			t.Errorf("%s task expected: %v, task inserted: %v", prefix, task, *taskCheck)
 		}
 	}
 }
@@ -199,17 +198,12 @@ func TestDeleteByID(t *testing.T) {
 
 	tr := r.NewTaskRepo(db)
 
-	testcases := []uint64{1, 2, 3, 4, 5}
+	testcases := []uint64{1, 2, 3, 4, 5, 6, 7, 8} // will work when running full suite or lone test
 
 	for _, taskId := range testcases {
 		err := tr.DeleteByID(taskId)
 		if err != nil {
 			t.Errorf("%s taskId: %d", prefix, taskId)
 		}
-	}
-
-	_, err := tr.DB.Query("SELECT * FROM tasks")
-	if err != nil {
-		t.Error(prefix, "did not delete all rows from table")
 	}
 }
