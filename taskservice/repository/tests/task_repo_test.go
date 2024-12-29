@@ -63,32 +63,32 @@ func TestCreateNew(t *testing.T) {
 
 	testcases := []models.Task{
 		{
-			Title:     "T1",
-			Priority:  true,
-			UserID:    100,
-			CreatedAt: time.Now().Format(time.DateTime),
+			Title:      "T1",
+			Priority:   true,
+			CreatorID:  100,
+			AssigneeID: 1,
+			CreatedAt:  time.Now().Format(time.DateTime),
 		},
 		{
 			Title:     "T2",
 			Priority:  false,
-			UserID:    9,
+			CreatorID: 9,
 			CreatedAt: time.Now().Format(time.DateTime),
 		},
 		{
-			Title:     "T3",
-			Priority:  false,
-			UserID:    12,
-			CreatedAt: time.Now().Format(time.DateTime),
+			Title:      "T3",
+			Priority:   false,
+			CreatorID:  12,
+			AssigneeID: 100000,
+			CreatedAt:  time.Now().Format(time.DateTime),
 		},
 	}
 
 	for _, task := range testcases {
 		err := tr.CreateNew(&task)
 		if err != nil {
-			t.Errorf("%s task: %v, %v, %v, %v, err: %v",
-				prefix,
-				task.Title, task.Priority, task.UserID, task.CreatedAt,
-				err)
+			t.Errorf("%s task: %v, err: %v",
+				prefix, task, err)
 		}
 	}
 }
@@ -113,7 +113,7 @@ func TestGetByID(t *testing.T) {
 	}
 
 	for taskId, expected := range testcases {
-		_, err := tr.GetByID(taskId)
+		_, err := tr.GetByTaskID(taskId)
 		if err != expected {
 			t.Errorf("%s taskId: %d, err: %v", prefix, taskId, err)
 		}
@@ -139,7 +139,7 @@ func TestGetAll(t *testing.T) {
 	lens := []int{0, 2, 1, 0, 1, 1}
 
 	for userId, expected := range testcases {
-		tasks, err := tr.GetAll(10000, uint64(userId))
+		tasks, err := tr.GetAllCreated(10000, uint64(userId))
 		if err != nil {
 			t.Errorf("%s userId: %d, expected: %v", prefix, userId, expected)
 		} else if len(tasks) != lens[userId] {
@@ -163,7 +163,7 @@ func TestUpdateExisting(t *testing.T) {
 			TaskID:    1,
 			Title:     "Leave Company",
 			Priority:  true,
-			UserID:    3,
+			CreatorID: 3,
 			CreatedAt: time.Now().Format(time.DateTime),
 		}: nil,
 
@@ -171,7 +171,7 @@ func TestUpdateExisting(t *testing.T) {
 			TaskID:    2,
 			Title:     "Code Harder",
 			Priority:  false,
-			UserID:    1,
+			CreatorID: 1,
 			CreatedAt: time.Now().Format(time.DateTime),
 		}: nil,
 		{
@@ -201,7 +201,7 @@ func TestDeleteByID(t *testing.T) {
 	testcases := []uint64{1, 2, 3, 4, 5, 6, 7, 8} // will work when running full suite or lone test
 
 	for _, taskId := range testcases {
-		err := tr.DeleteByID(taskId)
+		err := tr.DeleteByTaskID(taskId)
 		if err != nil {
 			t.Errorf("%s taskId: %d", prefix, taskId)
 		}
