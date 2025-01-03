@@ -58,10 +58,12 @@ func TestCreateNew(t *testing.T) {
 	}
 
 	for _, task := range testcases {
-		err := tr.CreateNew(&task)
+		ctx, cancel := loadContext()
+		defer cancel()
+
+		err := tr.CreateNew(ctx, &task)
 		if err != nil {
-			t.Errorf("%s task: %v, err: %v",
-				prefix, task, err)
+			t.Errorf("%s task: %v, err: %v", prefix, task, err)
 		}
 	}
 }
@@ -86,7 +88,10 @@ func TestGetByID(t *testing.T) {
 	}
 
 	for taskId, expected := range testcases {
-		_, err := tr.GetByTaskID(taskId)
+		ctx, cancel := loadContext()
+		defer cancel()
+
+		_, err := tr.GetByTaskID(ctx, taskId)
 		if err != expected {
 			t.Errorf("%s taskId: %d, err: %v", prefix, taskId, err)
 		}
@@ -112,7 +117,10 @@ func TestGetAll(t *testing.T) {
 	lens := []int{0, 2, 1, 0, 1, 1}
 
 	for userId, expected := range testcases {
-		tasks, err := tr.GetAllCreated(10000, uint64(userId))
+		ctx, cancel := loadContext()
+		defer cancel()
+
+		tasks, err := tr.GetAllCreated(ctx, 10000, uint64(userId))
 		if err != nil {
 			t.Errorf("%s userId: %d, expected: %v", prefix, userId, expected)
 		} else if len(tasks) != lens[userId] {
@@ -154,7 +162,10 @@ func TestUpdateExisting(t *testing.T) {
 	}
 
 	for task, expected := range testcases {
-		err := tr.UpdateExisting(task.TaskID, &task)
+		ctx, cancel := loadContext()
+		defer cancel()
+
+		err := tr.UpdateExisting(ctx, task.TaskID, &task)
 		if err != expected {
 			t.Errorf("%s taskId: %d, expected: %v, got: %v", prefix, task.TaskID, expected, err)
 		}
@@ -174,7 +185,10 @@ func TestDeleteByID(t *testing.T) {
 	testcases := []uint64{1, 2, 3, 4, 5, 6, 7, 8} // will work when running full suite or lone test
 
 	for _, taskId := range testcases {
-		err := tr.DeleteByTaskID(taskId)
+		ctx, cancel := loadContext()
+		defer cancel()
+
+		err := tr.DeleteByTaskID(ctx, taskId)
 		if err != nil {
 			t.Errorf("%s taskId: %d", prefix, taskId)
 		}

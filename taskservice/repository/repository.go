@@ -1,19 +1,23 @@
 package repository
 
-import "taskservice/models"
+import (
+	"context"
+
+	"taskservice/models"
+)
 
 type Repo interface {
 	// Create
-	CreateNew(record *models.Task) error
+	CreateNew(ctx context.Context, record *models.Task) error
 
 	// Read
-	GetByTaskID(id uint64) (*models.Task, error)
-	GetAllCreated(limit int, id uint64) ([]models.Task, error)
-	GetAllAssigned(limit int, id uint64) ([]models.Task, error)
+	GetByTaskID(ctx context.Context, id uint64) (*models.Task, error)
+	GetAllCreated(ctx context.Context, limit int, id uint64) ([]models.Task, error)
+	GetAllAssigned(ctx context.Context, limit int, id uint64) ([]models.Task, error)
 
 	// Update
-	UpdateExisting(id uint64, record *models.Task) error
+	UpdateExisting(ctx context.Context, id uint64, record *models.Task) error
 
 	// Delete
-	DeleteByTaskID(id uint64) error
+	DeleteByTaskID(ctx context.Context, id uint64) error
 }

@@ -1,8 +1,10 @@
 package tests
 
 import (
+	"context"
 	"database/sql"
 	"os"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -28,4 +30,8 @@ func loadDB() (*sql.DB, string) {
 		return nil, "Invalid login to test database"
 	}
 	return db, ""
+}
+
+func loadContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 3*time.Second)
 }
