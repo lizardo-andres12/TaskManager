@@ -9,11 +9,11 @@ import (
 )
 
 type TaskService struct {
-	TaskRepo repository.Repo
+	TaskRepository repository.Repository
 }
 
-func NewTaskService(tr repository.Repo) *TaskService {
-	return &TaskService{TaskRepo: tr}
+func NewTaskService(tr repository.Repository) *TaskService {
+	return &TaskService{TaskRepository: tr}
 }
 
 func (ts *TaskService) GetByID(ctx context.Context, id uint64) (*models.Task, error) {
@@ -24,7 +24,7 @@ func (ts *TaskService) GetByID(ctx context.Context, id uint64) (*models.Task, er
 
 	go func() {
 		defer wg.Done()
-		task, err = ts.TaskRepo.GetByTaskID(ctx, id)
+		task, err = ts.TaskRepository.GetByTaskID(ctx, id)
 	}()
 	wg.Wait()
 
@@ -43,12 +43,12 @@ func (ts *TaskService) GetAll(ctx context.Context, userId uint64, userType bool)
 	if userType {
 		go func() {
 			defer wg.Done()
-			tasks, err = ts.TaskRepo.GetAllCreated(ctx, 10000, userId)
+			tasks, err = ts.TaskRepository.GetAllCreated(ctx, 10000, userId)
 		}()
 	} else {
 		go func() {
 			defer wg.Done()
-			tasks, err = ts.TaskRepo.GetAllAssigned(ctx, 10000, userId)
+			tasks, err = ts.TaskRepository.GetAllAssigned(ctx, 10000, userId)
 		}()
 	}
 	wg.Wait()
@@ -66,7 +66,7 @@ func (ts *TaskService) CreateTask(ctx context.Context, task *models.Task) error 
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepo.CreateNew(ctx, task)
+		err = ts.TaskRepository.CreateNew(ctx, task)
 	}()
 	wg.Wait()
 
@@ -83,7 +83,7 @@ func (ts *TaskService) UpdateTask(ctx context.Context, task *models.Task) error 
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepo.UpdateExisting(ctx, task.TaskID, task)
+		err = ts.TaskRepository.UpdateExisting(ctx, task.TaskID, task)
 	}()
 	wg.Wait()
 
@@ -100,7 +100,7 @@ func (ts *TaskService) DeleteTask(ctx context.Context, task *models.Task) error 
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepo.DeleteByTaskID(ctx, task.TaskID)
+		err = ts.TaskRepository.DeleteByTaskID(ctx, task.TaskID)
 	}()
 	wg.Wait()
 

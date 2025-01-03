@@ -6,7 +6,7 @@ import (
 	"taskservice/models"
 )
 
-type Repo interface {
+type Repository interface {
 	// Create
 	CreateNew(ctx context.Context, record *models.Task) error
 
