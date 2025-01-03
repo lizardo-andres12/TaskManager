@@ -8,8 +8,6 @@ type Repo interface {
 
 	// Read
 	GetByTaskID(id uint64) (*models.Task, error)
-	GetByCreatorID(id uint64) (*models.Task, error)
-	GetByAssigneeID(id uint64) (*models.Task, error)
 	GetAllCreated(limit int, id uint64) ([]models.Task, error)
 	GetAllAssigned(limit int, id uint64) ([]models.Task, error)
 

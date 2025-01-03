@@ -33,7 +33,6 @@ func (taskrepo *TaskRepo) GetByTaskID(id uint64) (*models.Task, error) {
 	return &task, nil
 }
 
-// Gets all tasks CREATED by userId
 func (taskrepo *TaskRepo) GetAllCreated(limit int, id uint64) ([]models.Task, error) {
 	var tasks []models.Task
 
