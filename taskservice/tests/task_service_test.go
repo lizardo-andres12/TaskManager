@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"testing"
 
-	"taskservice/models"
 	"taskservice/repository"
 	"taskservice/service"
 )
@@ -19,10 +18,9 @@ func TestDeleteTask(t *testing.T) {
 
 	tr := repository.NewTaskRepo(db)
 	ts := service.NewTaskService(tr)
-	task := &models.Task{TaskID: 1}
 
 	ctx, cancel := loadContext()
 	defer cancel()
 
-	ts.DeleteTask(ctx, task)
+	ts.DeleteTask(ctx, 1)
 }
