@@ -1,0 +1,53 @@
+syntax = "proto3";
+option go_package = "taskservice/controller/proto";
+
+
+// defined to allow all task details to be returned with responses
+message Task {
+    uint64 taskId = 1;
+    string title = 2;
+    bool priority = 3;
+    uint64 creatorId = 4;
+    uint64 assigneeId = 5;
+    string createdAt = 6;
+}
+
+message CreateRequest {
+    string title = 1;
+    bool priority = 2;
+    uint64 creatorId = 3;
+    uint64 assigneeId = 4;
+}
+
+message SuccessResponse {
+    bool success = 1;
+}
+
+// ambiguous id so message can be used for multiple get types
+message IDOnlyRequest {
+    uint64 id = 1;
+    // bool priorityOnly = 2;
+}
+
+message GetResponse {
+    bool success = 1;
+    Task task = 2;
+}
+
+message GetAllResponse {
+    bool success = 1;
+    repeated Task tasks = 2;
+}
+
+message UpdateRequest {
+    uint64 taskId = 1;
+    Task task = 2;
+}
+
+service TaskServiceGRPC {
+    rpc CreateTask(CreateRequest) returns (SuccessResponse);
+    rpc GetTask(IDOnlyRequest) returns (GetResponse);
+    rpc GetAllTasks(IDOnlyRequest) returns (GetAllResponse);
+    rpc UpdateTask(UpdateRequest) returns (SuccessResponse);
+    rpc DeleteTask(IDOnlyRequest) returns (SuccessResponse);
+}
