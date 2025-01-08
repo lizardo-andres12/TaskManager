@@ -9,10 +9,10 @@ import (
 )
 
 type TaskService struct {
-	TaskRepository repository.Repository
+	TaskRepository *repository.TaskRepo
 }
 
-func NewTaskService(tr repository.Repository) *TaskService {
+func NewTaskService(tr *repository.TaskRepo) *TaskService {
 	return &TaskService{TaskRepository: tr}
 }
 
@@ -93,14 +93,14 @@ func (ts *TaskService) UpdateTask(ctx context.Context, task *models.Task) error 
 	return nil
 }
 
-func (ts *TaskService) DeleteTask(ctx context.Context, task *models.Task) error {
+func (ts *TaskService) DeleteTask(ctx context.Context, taskId uint64) error {
 	var wg sync.WaitGroup
 	var err error
 	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepository.DeleteByTaskID(ctx, task.TaskID)
+		err = ts.TaskRepository.DeleteByTaskID(ctx, taskId)
 	}()
 	wg.Wait()
 
