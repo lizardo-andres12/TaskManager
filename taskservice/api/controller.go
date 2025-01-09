@@ -11,6 +11,7 @@ import (
 
 type TaskController struct {
 	TaskService *service.TaskService
+	pb.UnimplementedTaskServiceGRPCServer
 }
 
 func NewTaskController(ts *service.TaskService) *TaskController {
@@ -84,7 +85,7 @@ func (tc *TaskController) UpdateTask(ctx context.Context, req *pb.UpdateRequest)
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	err := tc.TaskService.UpdateTask(ctx, PBTaskToTask(req.GetTask()))
+	err := tc.TaskService.UpdateTask(ctx, req.GetTaskId(), PBTaskToTask(req.GetTask()))
 	if err != nil {
 		return &pb.SuccessResponse{
 			Success: false,

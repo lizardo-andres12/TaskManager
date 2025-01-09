@@ -57,10 +57,10 @@ func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, limit int, id uint6
 	var tasks []models.Task
 
 	rows, err := taskrepo.DB.QueryContext(ctx, "SELECT * FROM tasks WHERE creatorId = ? LIMIT ?", id, limit)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var task models.Task
@@ -85,10 +85,10 @@ func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, limit int, id uint
 	var tasks []models.Task
 
 	rows, err := taskrepo.DB.QueryContext(ctx, "SELECT * FROM tasks WHERE assigneeId = ? LIMIT ?", id, limit)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var task models.Task
@@ -110,7 +110,7 @@ func (taskrepo *TaskRepo) UpdateExisting(ctx context.Context, id uint64, record 
 	default:
 	}
 
-	_, err := taskrepo.DB.ExecContext(ctx, "UPDATE tasks SET title = ?, priority = ?, creatorId = ?, assigneeId = ? WHERE taskId = ?", record.Title, record.Priority, record.CreatorID, record.AssigneeID, id)
+	_, err := taskrepo.DB.ExecContext(ctx, "UPDATE tasks SET title = ?, priority = ?, assigneeId = ? WHERE taskId = ?", record.Title, record.Priority, record.AssigneeID, id)
 	if err != nil {
 		return err
 	}

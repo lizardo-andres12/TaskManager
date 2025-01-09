@@ -12,6 +12,6 @@ type Service interface {
 
 	// Create, Update, Delete functions
 	CreateTask(ctx context.Context, task *models.Task) error
-	UpdateTask(ctx context.Context, id uint64, task *models.Task) error
+	UpdateTask(ctx context.Context, taskId uint64, task *models.Task) error
 	DeleteTask(ctx context.Context, id uint64) error
 }

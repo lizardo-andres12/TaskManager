@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"taskservice/models"
@@ -76,14 +77,16 @@ func (ts *TaskService) CreateTask(ctx context.Context, task *models.Task) error 
 	return nil
 }
 
-func (ts *TaskService) UpdateTask(ctx context.Context, task *models.Task) error {
+func (ts *TaskService) UpdateTask(ctx context.Context, taskId uint64, task *models.Task) error {
 	var wg sync.WaitGroup
 	var err error
 	wg.Add(1)
 
+	fmt.Println(taskId)
+
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepository.UpdateExisting(ctx, task.TaskID, task)
+		err = ts.TaskRepository.UpdateExisting(ctx, taskId, task)
 	}()
 	wg.Wait()
 
