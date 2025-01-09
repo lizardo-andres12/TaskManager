@@ -18,6 +18,12 @@ func NewTaskRepo(db *sql.DB) *TaskRepo {
 }
 
 func (taskrepo *TaskRepo) CreateNew(ctx context.Context, record *models.Task) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
 	_, err := taskrepo.DB.ExecContext(ctx, "INSERT INTO tasks (Title, Priority, CreatorID, AssigneeID) VALUES (?, ?, ?, ?)", record.Title, record.Priority, record.CreatorID, record.AssigneeID)
 	if err != nil {
 		return err
@@ -26,6 +32,12 @@ func (taskrepo *TaskRepo) CreateNew(ctx context.Context, record *models.Task) er
 }
 
 func (taskrepo *TaskRepo) GetByTaskID(ctx context.Context, id uint64) (*models.Task, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	var task models.Task
 
 	row := taskrepo.DB.QueryRowContext(ctx, "SELECT * FROM tasks WHERE taskId = ?", id)
@@ -36,6 +48,12 @@ func (taskrepo *TaskRepo) GetByTaskID(ctx context.Context, id uint64) (*models.T
 }
 
 func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, limit int, id uint64) ([]models.Task, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	var tasks []models.Task
 
 	rows, err := taskrepo.DB.QueryContext(ctx, "SELECT * FROM tasks WHERE creatorId = ? LIMIT ?", id, limit)
@@ -58,6 +76,12 @@ func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, limit int, id uint6
 }
 
 func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, limit int, id uint64) ([]models.Task, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
+	}
+
 	var tasks []models.Task
 
 	rows, err := taskrepo.DB.QueryContext(ctx, "SELECT * FROM tasks WHERE assigneeId = ? LIMIT ?", id, limit)
@@ -80,6 +104,12 @@ func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, limit int, id uint
 }
 
 func (taskrepo *TaskRepo) UpdateExisting(ctx context.Context, id uint64, record *models.Task) error { // this function should never receive taskId not stored
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
 	_, err := taskrepo.DB.ExecContext(ctx, "UPDATE tasks SET title = ?, priority = ?, creatorId = ?, assigneeId = ? WHERE taskId = ?", record.Title, record.Priority, record.CreatorID, record.AssigneeID, id)
 	if err != nil {
 		return err
@@ -88,6 +118,12 @@ func (taskrepo *TaskRepo) UpdateExisting(ctx context.Context, id uint64, record 
 }
 
 func (taskrepo *TaskRepo) DeleteByTaskID(ctx context.Context, id uint64) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
 	_, err := taskrepo.DB.ExecContext(ctx, "DELETE FROM tasks WHERE taskId = ?", id)
 	if err != nil {
 		return err
