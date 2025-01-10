@@ -1,0 +1,25 @@
+auth service:
+    - Handles user authentication with login and registration
+    - Generates JWT upon successful authorization
+    - Database should store usernames, hashed password, user role
+user service:
+    - Manages user profiles and settings beyond authentication
+    - Database should store name, profile picture, preferences, etc. (Document store)
+task service:
+    - Manages CRUD operations on tasks and task statuses/deadlines
+    - Database stores tasks
+    - Notifies notification service when tasks are assigned/completed
+team service:
+    - Manage team membership and define team roles
+    - Database should have teams table storing details like name, description, and owner,
+        along with and team members table which stores roles and other relevant information
+notification service:
+    - Send notifications to users notifying them about task assignment, status, deadlines, etc.
+    - Database stores user read/unread notification statuses
+    - Listen to events from task and team services for real time updates
+file service:
+    - Manage file uploads and downloads
+    - Should have one file store and one relational database with metadata such as file name and url
+
+**All services will be called by an aggregator api gateway
+    
