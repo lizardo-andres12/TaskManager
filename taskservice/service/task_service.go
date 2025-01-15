@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sync"
+	"time"
 
 	"taskservice/models"
 	"taskservice/repository"
@@ -14,10 +14,82 @@ type TaskService struct {
 }
 
 func NewTaskService(tr *repository.TaskRepo) *TaskService {
-	return &TaskService{TaskRepository: tr}
+	return &TaskService{
+		TaskRepository: tr,
+	}
 }
 
-func (ts *TaskService) GetByID(ctx context.Context, id uint64) (*models.Task, error) {
+func (ts *TaskService) CreateTask(ctx context.Context, task *models.Task) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.TaskRepository.CreateTask(ctx, task)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) AssignToTask(ctx context.Context, assignee *models.TaskAssignee) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.TaskRepository.AssignToTask(ctx, assignee)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) GetAllAssigned(ctx context.Context, id uint64, limit uint64, offset uint64) ([]models.Task, error) {
+	var wg sync.WaitGroup
+	var tasks []models.Task
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		tasks, err = ts.TaskRepository.GetAllAssigned(ctx, id, limit, offset)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func (ts *TaskService) GetAllCreated(ctx context.Context, id uint64, limit uint64, offset uint64) ([]models.Task, error) {
+	var wg sync.WaitGroup
+	var tasks []models.Task
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		tasks, err = ts.TaskRepository.GetAllCreated(ctx, id, limit, offset)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func (ts *TaskService) GetByTaskID(ctx context.Context, id uint64) (*models.Task, error) {
 	var wg sync.WaitGroup
 	var task *models.Task
 	var err error
@@ -35,39 +107,14 @@ func (ts *TaskService) GetByID(ctx context.Context, id uint64) (*models.Task, er
 	return task, nil
 }
 
-func (ts *TaskService) GetAll(ctx context.Context, userId uint64, userType bool) ([]models.Task, error) {
-	var wg sync.WaitGroup
-	var tasks []models.Task
-	var err error
-	wg.Add(1)
-
-	if userType {
-		go func() {
-			defer wg.Done()
-			tasks, err = ts.TaskRepository.GetAllCreated(ctx, 10000, userId)
-		}()
-	} else {
-		go func() {
-			defer wg.Done()
-			tasks, err = ts.TaskRepository.GetAllAssigned(ctx, 10000, userId)
-		}()
-	}
-	wg.Wait()
-
-	if err != nil {
-		return nil, err
-	}
-	return tasks, nil
-}
-
-func (ts *TaskService) CreateTask(ctx context.Context, task *models.Task) error {
+func (ts *TaskService) UpdateTitle(ctx context.Context, id uint64, title string) error {
 	var wg sync.WaitGroup
 	var err error
 	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepository.CreateNew(ctx, task)
+		err = ts.TaskRepository.UpdateTitle(ctx, id, title)
 	}()
 	wg.Wait()
 
@@ -77,16 +124,14 @@ func (ts *TaskService) CreateTask(ctx context.Context, task *models.Task) error 
 	return nil
 }
 
-func (ts *TaskService) UpdateTask(ctx context.Context, taskId uint64, task *models.Task) error {
+func (ts *TaskService) UpdateDescription(ctx context.Context, id uint64, desc string) error {
 	var wg sync.WaitGroup
 	var err error
 	wg.Add(1)
 
-	fmt.Println(taskId)
-
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepository.UpdateExisting(ctx, taskId, task)
+		err = ts.TaskRepository.UpdateDescription(ctx, id, desc)
 	}()
 	wg.Wait()
 
@@ -96,16 +141,84 @@ func (ts *TaskService) UpdateTask(ctx context.Context, taskId uint64, task *mode
 	return nil
 }
 
-func (ts *TaskService) DeleteTask(ctx context.Context, taskId uint64) error {
+func (ts *TaskService) UpdateStatus(ctx context.Context, id uint64, status uint8) error {
 	var wg sync.WaitGroup
 	var err error
 	wg.Add(1)
 
 	go func() {
 		defer wg.Done()
-		err = ts.TaskRepository.DeleteByTaskID(ctx, taskId)
+		err = ts.TaskRepository.UpdateStatus(ctx, id, status)
 	}()
 	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) UpdateDeadline(ctx context.Context, id uint64, deadline *time.Time) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.TaskRepository.UpdateDeadline(ctx, id, deadline)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) UpdatePriority(ctx context.Context, id uint64, priority bool) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.TaskRepository.UpdatePriority(ctx, id, priority)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) DeleteTask(ctx context.Context, id uint64) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.TaskRepository.DeleteTask(ctx, id)
+	}()
+	wg.Wait()
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ts *TaskService) UnassignTask(ctx context.Context, id uint64) error {
+	var wg sync.WaitGroup
+	var err error
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		err = ts.UnassignTask(ctx, id)
+	}()
+	wg.Done()
 
 	if err != nil {
 		return err
