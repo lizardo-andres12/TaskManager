@@ -6,17 +6,22 @@ option go_package = "taskservice/controller/proto";
 message Task {
     uint64 taskId = 1;
     string title = 2;
-    bool priority = 3;
-    uint64 creatorId = 4;
-    uint64 assigneeId = 5;
-    string createdAt = 6;
+    string description = 3;
+    uint32 status = 4;
+    string deadline = 5;
+    bool priority = 6;
+    uint64 creatorId = 7;
 }
 
 message CreateRequest {
     string title = 1;
     bool priority = 2;
     uint64 creatorId = 3;
-    uint64 assigneeId = 4;
+}
+
+message AssignRequest {
+    uint64 taskId = 1;
+    uint64 assigneeId = 2;
 }
 
 message SuccessResponse {
@@ -39,15 +44,39 @@ message GetAllResponse {
     repeated Task tasks = 2;
 }
 
-message UpdateRequest {
+message UpdateStringRequest {
     uint64 taskId = 1;
-    Task task = 2;
+    string text = 2;
+}
+
+message UpdateStatusRequest {
+    uint64 taskId = 1;
+    uint32 status = 2;
+}
+
+message UpdatePriorityRequest {
+    uint64 taskId = 1;
+    bool priority = 2;
 }
 
 service TaskServiceGRPC {
+    // Create
     rpc CreateTask(CreateRequest) returns (SuccessResponse);
+    rpc AssignToTask(AssignRequest) returns (SuccessResponse);
+
+    // Read
     rpc GetTask(IDOnlyRequest) returns (GetResponse);
-    rpc GetAllTasks(IDOnlyRequest) returns (GetAllResponse);
-    rpc UpdateTask(UpdateRequest) returns (SuccessResponse);
+    rpc GetAllAssigned(IDOnlyRequest) returns (GetAllResponse);
+    rpc GetAllCreated(IDOnlyRequest) returns (GetAllResponse);
+
+    // Update
+    rpc UpdateTitle(UpdateStringRequest) returns (SuccessResponse);
+    rpc UpdateDescription(UpdateStringRequest) returns (SuccessResponse);
+    rpc UpdateStatus(UpdateStatusRequest) returns (SuccessResponse);
+    rpc UpdateDeadline(UpdateStringRequest) returns (SuccessResponse);
+    rpc UpdatePriority(UpdatePriorityRequest) returns (SuccessResponse);
+
+    // Delete
     rpc DeleteTask(IDOnlyRequest) returns (SuccessResponse);
+    rpc UnassignTask(IDOnlyRequest) returns (SuccessResponse);
 }

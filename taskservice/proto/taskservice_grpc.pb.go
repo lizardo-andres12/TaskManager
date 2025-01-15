@@ -19,22 +19,40 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TaskServiceGRPC_CreateTask_FullMethodName  = "/TaskServiceGRPC/CreateTask"
-	TaskServiceGRPC_GetTask_FullMethodName     = "/TaskServiceGRPC/GetTask"
-	TaskServiceGRPC_GetAllTasks_FullMethodName = "/TaskServiceGRPC/GetAllTasks"
-	TaskServiceGRPC_UpdateTask_FullMethodName  = "/TaskServiceGRPC/UpdateTask"
-	TaskServiceGRPC_DeleteTask_FullMethodName  = "/TaskServiceGRPC/DeleteTask"
+	TaskServiceGRPC_CreateTask_FullMethodName        = "/TaskServiceGRPC/CreateTask"
+	TaskServiceGRPC_AssignToTask_FullMethodName      = "/TaskServiceGRPC/AssignToTask"
+	TaskServiceGRPC_GetTask_FullMethodName           = "/TaskServiceGRPC/GetTask"
+	TaskServiceGRPC_GetAllAssigned_FullMethodName    = "/TaskServiceGRPC/GetAllAssigned"
+	TaskServiceGRPC_GetAllCreated_FullMethodName     = "/TaskServiceGRPC/GetAllCreated"
+	TaskServiceGRPC_UpdateTitle_FullMethodName       = "/TaskServiceGRPC/UpdateTitle"
+	TaskServiceGRPC_UpdateDescription_FullMethodName = "/TaskServiceGRPC/UpdateDescription"
+	TaskServiceGRPC_UpdateStatus_FullMethodName      = "/TaskServiceGRPC/UpdateStatus"
+	TaskServiceGRPC_UpdateDeadline_FullMethodName    = "/TaskServiceGRPC/UpdateDeadline"
+	TaskServiceGRPC_UpdatePriority_FullMethodName    = "/TaskServiceGRPC/UpdatePriority"
+	TaskServiceGRPC_DeleteTask_FullMethodName        = "/TaskServiceGRPC/DeleteTask"
+	TaskServiceGRPC_UnassignTask_FullMethodName      = "/TaskServiceGRPC/UnassignTask"
 )
 
 // TaskServiceGRPCClient is the client API for TaskServiceGRPC service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TaskServiceGRPCClient interface {
+	// Create
 	CreateTask(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	AssignToTask(ctx context.Context, in *AssignRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	// Read
 	GetTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	GetAllTasks(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
-	UpdateTask(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	GetAllAssigned(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAllCreated(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	// Update
+	UpdateTitle(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	UpdateDescription(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	UpdateDeadline(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	UpdatePriority(ctx context.Context, in *UpdatePriorityRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	// Delete
 	DeleteTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
+	UnassignTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
 }
 
 type taskServiceGRPCClient struct {
@@ -55,6 +73,16 @@ func (c *taskServiceGRPCClient) CreateTask(ctx context.Context, in *CreateReques
 	return out, nil
 }
 
+func (c *taskServiceGRPCClient) AssignToTask(ctx context.Context, in *AssignRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_AssignToTask_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *taskServiceGRPCClient) GetTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetResponse)
@@ -65,20 +93,70 @@ func (c *taskServiceGRPCClient) GetTask(ctx context.Context, in *IDOnlyRequest, 
 	return out, nil
 }
 
-func (c *taskServiceGRPCClient) GetAllTasks(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *taskServiceGRPCClient) GetAllAssigned(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, TaskServiceGRPC_GetAllTasks_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_GetAllAssigned_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *taskServiceGRPCClient) UpdateTask(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+func (c *taskServiceGRPCClient) GetAllCreated(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_GetAllCreated_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceGRPCClient) UpdateTitle(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SuccessResponse)
-	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdateTask_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdateTitle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceGRPCClient) UpdateDescription(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdateDescription_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceGRPCClient) UpdateStatus(ctx context.Context, in *UpdateStatusRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdateStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceGRPCClient) UpdateDeadline(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdateDeadline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceGRPCClient) UpdatePriority(ctx context.Context, in *UpdatePriorityRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UpdatePriority_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,15 +173,36 @@ func (c *taskServiceGRPCClient) DeleteTask(ctx context.Context, in *IDOnlyReques
 	return out, nil
 }
 
+func (c *taskServiceGRPCClient) UnassignTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*SuccessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SuccessResponse)
+	err := c.cc.Invoke(ctx, TaskServiceGRPC_UnassignTask_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TaskServiceGRPCServer is the server API for TaskServiceGRPC service.
 // All implementations must embed UnimplementedTaskServiceGRPCServer
 // for forward compatibility.
 type TaskServiceGRPCServer interface {
+	// Create
 	CreateTask(context.Context, *CreateRequest) (*SuccessResponse, error)
+	AssignToTask(context.Context, *AssignRequest) (*SuccessResponse, error)
+	// Read
 	GetTask(context.Context, *IDOnlyRequest) (*GetResponse, error)
-	GetAllTasks(context.Context, *IDOnlyRequest) (*GetAllResponse, error)
-	UpdateTask(context.Context, *UpdateRequest) (*SuccessResponse, error)
+	GetAllAssigned(context.Context, *IDOnlyRequest) (*GetAllResponse, error)
+	GetAllCreated(context.Context, *IDOnlyRequest) (*GetAllResponse, error)
+	// Update
+	UpdateTitle(context.Context, *UpdateStringRequest) (*SuccessResponse, error)
+	UpdateDescription(context.Context, *UpdateStringRequest) (*SuccessResponse, error)
+	UpdateStatus(context.Context, *UpdateStatusRequest) (*SuccessResponse, error)
+	UpdateDeadline(context.Context, *UpdateStringRequest) (*SuccessResponse, error)
+	UpdatePriority(context.Context, *UpdatePriorityRequest) (*SuccessResponse, error)
+	// Delete
 	DeleteTask(context.Context, *IDOnlyRequest) (*SuccessResponse, error)
+	UnassignTask(context.Context, *IDOnlyRequest) (*SuccessResponse, error)
 	mustEmbedUnimplementedTaskServiceGRPCServer()
 }
 
@@ -117,17 +216,38 @@ type UnimplementedTaskServiceGRPCServer struct{}
 func (UnimplementedTaskServiceGRPCServer) CreateTask(context.Context, *CreateRequest) (*SuccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTask not implemented")
 }
+func (UnimplementedTaskServiceGRPCServer) AssignToTask(context.Context, *AssignRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AssignToTask not implemented")
+}
 func (UnimplementedTaskServiceGRPCServer) GetTask(context.Context, *IDOnlyRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
-func (UnimplementedTaskServiceGRPCServer) GetAllTasks(context.Context, *IDOnlyRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllTasks not implemented")
+func (UnimplementedTaskServiceGRPCServer) GetAllAssigned(context.Context, *IDOnlyRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllAssigned not implemented")
 }
-func (UnimplementedTaskServiceGRPCServer) UpdateTask(context.Context, *UpdateRequest) (*SuccessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateTask not implemented")
+func (UnimplementedTaskServiceGRPCServer) GetAllCreated(context.Context, *IDOnlyRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCreated not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UpdateTitle(context.Context, *UpdateStringRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTitle not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UpdateDescription(context.Context, *UpdateStringRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDescription not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UpdateStatus(context.Context, *UpdateStatusRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UpdateDeadline(context.Context, *UpdateStringRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDeadline not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UpdatePriority(context.Context, *UpdatePriorityRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePriority not implemented")
 }
 func (UnimplementedTaskServiceGRPCServer) DeleteTask(context.Context, *IDOnlyRequest) (*SuccessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
+}
+func (UnimplementedTaskServiceGRPCServer) UnassignTask(context.Context, *IDOnlyRequest) (*SuccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnassignTask not implemented")
 }
 func (UnimplementedTaskServiceGRPCServer) mustEmbedUnimplementedTaskServiceGRPCServer() {}
 func (UnimplementedTaskServiceGRPCServer) testEmbeddedByValue()                         {}
@@ -168,6 +288,24 @@ func _TaskServiceGRPC_CreateTask_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskServiceGRPC_AssignToTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AssignRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).AssignToTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_AssignToTask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).AssignToTask(ctx, req.(*AssignRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TaskServiceGRPC_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IDOnlyRequest)
 	if err := dec(in); err != nil {
@@ -186,38 +324,128 @@ func _TaskServiceGRPC_GetTask_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TaskServiceGRPC_GetAllTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TaskServiceGRPC_GetAllAssigned_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IDOnlyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TaskServiceGRPCServer).GetAllTasks(ctx, in)
+		return srv.(TaskServiceGRPCServer).GetAllAssigned(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TaskServiceGRPC_GetAllTasks_FullMethodName,
+		FullMethod: TaskServiceGRPC_GetAllAssigned_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceGRPCServer).GetAllTasks(ctx, req.(*IDOnlyRequest))
+		return srv.(TaskServiceGRPCServer).GetAllAssigned(ctx, req.(*IDOnlyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TaskServiceGRPC_UpdateTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateRequest)
+func _TaskServiceGRPC_GetAllCreated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDOnlyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TaskServiceGRPCServer).UpdateTask(ctx, in)
+		return srv.(TaskServiceGRPCServer).GetAllCreated(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TaskServiceGRPC_UpdateTask_FullMethodName,
+		FullMethod: TaskServiceGRPC_GetAllCreated_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceGRPCServer).UpdateTask(ctx, req.(*UpdateRequest))
+		return srv.(TaskServiceGRPCServer).GetAllCreated(ctx, req.(*IDOnlyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskServiceGRPC_UpdateTitle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStringRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UpdateTitle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UpdateTitle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UpdateTitle(ctx, req.(*UpdateStringRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskServiceGRPC_UpdateDescription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStringRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UpdateDescription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UpdateDescription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UpdateDescription(ctx, req.(*UpdateStringRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskServiceGRPC_UpdateStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UpdateStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UpdateStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UpdateStatus(ctx, req.(*UpdateStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskServiceGRPC_UpdateDeadline_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStringRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UpdateDeadline(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UpdateDeadline_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UpdateDeadline(ctx, req.(*UpdateStringRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskServiceGRPC_UpdatePriority_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePriorityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UpdatePriority(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UpdatePriority_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UpdatePriority(ctx, req.(*UpdatePriorityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -240,6 +468,24 @@ func _TaskServiceGRPC_DeleteTask_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TaskServiceGRPC_UnassignTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDOnlyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceGRPCServer).UnassignTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TaskServiceGRPC_UnassignTask_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceGRPCServer).UnassignTask(ctx, req.(*IDOnlyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TaskServiceGRPC_ServiceDesc is the grpc.ServiceDesc for TaskServiceGRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -252,20 +498,48 @@ var TaskServiceGRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TaskServiceGRPC_CreateTask_Handler,
 		},
 		{
+			MethodName: "AssignToTask",
+			Handler:    _TaskServiceGRPC_AssignToTask_Handler,
+		},
+		{
 			MethodName: "GetTask",
 			Handler:    _TaskServiceGRPC_GetTask_Handler,
 		},
 		{
-			MethodName: "GetAllTasks",
-			Handler:    _TaskServiceGRPC_GetAllTasks_Handler,
+			MethodName: "GetAllAssigned",
+			Handler:    _TaskServiceGRPC_GetAllAssigned_Handler,
 		},
 		{
-			MethodName: "UpdateTask",
-			Handler:    _TaskServiceGRPC_UpdateTask_Handler,
+			MethodName: "GetAllCreated",
+			Handler:    _TaskServiceGRPC_GetAllCreated_Handler,
+		},
+		{
+			MethodName: "UpdateTitle",
+			Handler:    _TaskServiceGRPC_UpdateTitle_Handler,
+		},
+		{
+			MethodName: "UpdateDescription",
+			Handler:    _TaskServiceGRPC_UpdateDescription_Handler,
+		},
+		{
+			MethodName: "UpdateStatus",
+			Handler:    _TaskServiceGRPC_UpdateStatus_Handler,
+		},
+		{
+			MethodName: "UpdateDeadline",
+			Handler:    _TaskServiceGRPC_UpdateDeadline_Handler,
+		},
+		{
+			MethodName: "UpdatePriority",
+			Handler:    _TaskServiceGRPC_UpdatePriority_Handler,
 		},
 		{
 			MethodName: "DeleteTask",
 			Handler:    _TaskServiceGRPC_DeleteTask_Handler,
+		},
+		{
+			MethodName: "UnassignTask",
+			Handler:    _TaskServiceGRPC_UnassignTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
