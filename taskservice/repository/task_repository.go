@@ -27,7 +27,7 @@ func (taskrepo *TaskRepo) CreateTask(ctx context.Context, task *models.Task) err
 
 	_, err := taskrepo.DB.ExecContext(
 		ctx,
-		"INSERT INTO task (title, description, deadline, priority, creatorId, teamId) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO task (title, description, status, deadline, priority, creatorId, teamId) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		task.Title,
 		task.Description,
 		task.Status,
@@ -72,7 +72,7 @@ func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, id uint64, limit u
 
 	rows, err := taskrepo.DB.QueryContext(
 		ctx,
-		"SELECT t.title, t.description, t.status, t.deadline, t.priority, t.creatorId, t.teamId FROM task t "+
+		"SELECT t.taskId, t.title, t.description, t.status, t.deadline, t.priority, t.creatorId, IFNULL(t.teamId, 0) FROM task t "+
 			"INNER JOIN assignee a ON t.taskId = a.taskId WHERE a.assigneeId = ? ORDER BY t.createdAt DESC LIMIT ? OFFSET ?",
 		id,
 		limit,
@@ -85,7 +85,7 @@ func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, id uint64, limit u
 
 	for rows.Next() {
 		var task models.Task
-		err = rows.Scan(&task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID)
+		err = rows.Scan(&task.TaskID, &task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID)
 		if err != nil {
 			return nil, err
 		}
@@ -108,8 +108,8 @@ func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, creatorId uint64, l
 
 	rows, err := taskrepo.DB.QueryContext(
 		ctx,
-		"SELECT t.title, t.description, t.status, t.deadline, t.priority, t.creatorId, t.teamId FROM task t "+
-			"WHERE t.creatorId = ? ORDER BY t.createdAt DESC LIMIT ? OFFSET ?",
+		"SELECT taskId, title, description, status, deadline, priority, creatorId, IFNULL(teamId, 0) FROM task "+
+			"WHERE creatorId = ? ORDER BY createdAt DESC LIMIT ? OFFSET ?",
 		creatorId,
 		limit,
 		offset,
@@ -121,7 +121,7 @@ func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, creatorId uint64, l
 
 	for rows.Next() {
 		var task models.Task
-		err = rows.Scan(&task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID)
+		err = rows.Scan(&task.TaskID, &task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID)
 		if err != nil {
 			return nil, err
 		}
@@ -144,11 +144,11 @@ func (taskrepo *TaskRepo) GetByTaskID(ctx context.Context, id uint64) (*models.T
 
 	row := taskrepo.DB.QueryRowContext(
 		ctx,
-		"SELECT taskId, title, description, status, deadline, priority, creatorId, teamId FROM task WHERE taskId = ?",
+		"SELECT taskId, title, description, status, deadline, priority, creatorId, IFNULL(teamId, 0) FROM task WHERE taskId = ?",
 		id,
 	)
 
-	if err := row.Scan(&task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID); err != nil {
+	if err := row.Scan(&task.TaskID, &task.Title, &task.Description, &task.Status, &task.Deadline, &task.Priority, &task.CreatorID, &task.TeamID); err != nil {
 		return nil, err
 	}
 	return &task, nil
@@ -202,7 +202,7 @@ func (taskrepo *TaskRepo) UpdateDeadline(ctx context.Context, id uint64, deadlin
 		return ctx.Err()
 	default:
 	}
-	deadlineStr := deadline.Format("YYYY-MM-DD HH:MM:SS")
+	deadlineStr := deadline.Format(time.DateTime)
 
 	_, err := taskrepo.DB.ExecContext(ctx, "UPDATE task SET deadline = ? WHERE taskId = ?", deadlineStr, id)
 	if err != nil {
