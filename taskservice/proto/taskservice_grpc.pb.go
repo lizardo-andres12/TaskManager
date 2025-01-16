@@ -42,8 +42,8 @@ type TaskServiceGRPCClient interface {
 	AssignToTask(ctx context.Context, in *AssignRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
 	// Read
 	GetTask(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	GetAllAssigned(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
-	GetAllCreated(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAllAssigned(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetAllCreated(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	// Update
 	UpdateTitle(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
 	UpdateDescription(ctx context.Context, in *UpdateStringRequest, opts ...grpc.CallOption) (*SuccessResponse, error)
@@ -93,7 +93,7 @@ func (c *taskServiceGRPCClient) GetTask(ctx context.Context, in *IDOnlyRequest, 
 	return out, nil
 }
 
-func (c *taskServiceGRPCClient) GetAllAssigned(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *taskServiceGRPCClient) GetAllAssigned(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, TaskServiceGRPC_GetAllAssigned_FullMethodName, in, out, cOpts...)
@@ -103,7 +103,7 @@ func (c *taskServiceGRPCClient) GetAllAssigned(ctx context.Context, in *IDOnlyRe
 	return out, nil
 }
 
-func (c *taskServiceGRPCClient) GetAllCreated(ctx context.Context, in *IDOnlyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *taskServiceGRPCClient) GetAllCreated(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, TaskServiceGRPC_GetAllCreated_FullMethodName, in, out, cOpts...)
@@ -192,8 +192,8 @@ type TaskServiceGRPCServer interface {
 	AssignToTask(context.Context, *AssignRequest) (*SuccessResponse, error)
 	// Read
 	GetTask(context.Context, *IDOnlyRequest) (*GetResponse, error)
-	GetAllAssigned(context.Context, *IDOnlyRequest) (*GetAllResponse, error)
-	GetAllCreated(context.Context, *IDOnlyRequest) (*GetAllResponse, error)
+	GetAllAssigned(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	GetAllCreated(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	// Update
 	UpdateTitle(context.Context, *UpdateStringRequest) (*SuccessResponse, error)
 	UpdateDescription(context.Context, *UpdateStringRequest) (*SuccessResponse, error)
@@ -222,10 +222,10 @@ func (UnimplementedTaskServiceGRPCServer) AssignToTask(context.Context, *AssignR
 func (UnimplementedTaskServiceGRPCServer) GetTask(context.Context, *IDOnlyRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
-func (UnimplementedTaskServiceGRPCServer) GetAllAssigned(context.Context, *IDOnlyRequest) (*GetAllResponse, error) {
+func (UnimplementedTaskServiceGRPCServer) GetAllAssigned(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAssigned not implemented")
 }
-func (UnimplementedTaskServiceGRPCServer) GetAllCreated(context.Context, *IDOnlyRequest) (*GetAllResponse, error) {
+func (UnimplementedTaskServiceGRPCServer) GetAllCreated(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCreated not implemented")
 }
 func (UnimplementedTaskServiceGRPCServer) UpdateTitle(context.Context, *UpdateStringRequest) (*SuccessResponse, error) {
@@ -325,7 +325,7 @@ func _TaskServiceGRPC_GetTask_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _TaskServiceGRPC_GetAllAssigned_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDOnlyRequest)
+	in := new(GetAllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -337,13 +337,13 @@ func _TaskServiceGRPC_GetAllAssigned_Handler(srv interface{}, ctx context.Contex
 		FullMethod: TaskServiceGRPC_GetAllAssigned_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceGRPCServer).GetAllAssigned(ctx, req.(*IDOnlyRequest))
+		return srv.(TaskServiceGRPCServer).GetAllAssigned(ctx, req.(*GetAllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _TaskServiceGRPC_GetAllCreated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IDOnlyRequest)
+	in := new(GetAllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -355,7 +355,7 @@ func _TaskServiceGRPC_GetAllCreated_Handler(srv interface{}, ctx context.Context
 		FullMethod: TaskServiceGRPC_GetAllCreated_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceGRPCServer).GetAllCreated(ctx, req.(*IDOnlyRequest))
+		return srv.(TaskServiceGRPCServer).GetAllCreated(ctx, req.(*GetAllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
