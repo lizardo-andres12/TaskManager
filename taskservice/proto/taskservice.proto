@@ -26,10 +26,14 @@ message SuccessResponse {
     bool success = 1;
 }
 
-// ambiguous id so message can be used for multiple get types
 message IDOnlyRequest {
     uint64 id = 1;
-    // bool priorityOnly = 2;
+}
+
+message GetAllRequest {
+    uint64 id = 1;
+    uint64 limit = 2;
+    uint64 offset = 3;
 }
 
 message GetResponse {
@@ -64,8 +68,8 @@ service TaskServiceGRPC {
 
     // Read
     rpc GetTask(IDOnlyRequest) returns (GetResponse);
-    rpc GetAllAssigned(IDOnlyRequest) returns (GetAllResponse);
-    rpc GetAllCreated(IDOnlyRequest) returns (GetAllResponse);
+    rpc GetAllAssigned(GetAllRequest) returns (GetAllResponse);
+    rpc GetAllCreated(GetAllRequest) returns (GetAllResponse);
 
     // Update
     rpc UpdateTitle(UpdateStringRequest) returns (SuccessResponse);
