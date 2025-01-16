@@ -6,7 +6,7 @@ CREATE TABLE task (
     description VARCHAR(250) NOT NULL,
     deadline TIMESTAMP NOT NULL,
     status TINYINT(255) NOT NULL,
-    priority TINYINT(1) NOT NULL,
+    priority BOOL NOT NULL,
     creatorId BIGINT UNSIGNED NOT NULL,
     teamId BIGINT UNSIGNED,
     createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -27,7 +27,7 @@ VALUES
     ('Program', 'Help gavin code', '2025-12-12 00:00:00', 0, 0, 1, NULL),
     ('Eat', 'cook pasta', '2025-12-11 00:00:00', 1, 1, 2, 4),
     ('Write some code', 'refactor service layer', '2025-11-12 00:00:00', 0, 1, 1, 2),
-    ('Drive home', 'get all things and go home', '2025-12-12 12:00:00', 0, 2, 1, NULL),
+    ('Drive home', 'get all things and go home', '2025-12-12 12:00:00', 0, 1, 1, NULL),
     ('Run', 'run a mile', '2025-12-12 00:00:30', 0, 1, 1, 2),
     ('Drink water', 'make sure to drink a gallon of water', '2025-12-1 00:00:00', 2, 0, 1, NULL);
 
