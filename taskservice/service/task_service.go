@@ -218,7 +218,7 @@ func (ts *TaskService) UnassignTask(ctx context.Context, id uint64) error {
 		defer wg.Done()
 		err = ts.UnassignTask(ctx, id)
 	}()
-	wg.Done()
+	wg.Wait()
 
 	if err != nil {
 		return err
