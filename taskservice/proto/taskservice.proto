@@ -14,9 +14,7 @@ message Task {
 }
 
 message CreateRequest {
-    string title = 1;
-    bool priority = 2;
-    uint64 creatorId = 3;
+    Task task = 1;
 }
 
 message AssignRequest {
