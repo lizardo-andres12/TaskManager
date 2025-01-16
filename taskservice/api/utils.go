@@ -14,6 +14,7 @@ func TaskToPBTask(task *models.Task) *pb.Task {
 		Deadline:    task.Deadline,
 		Priority:    task.Priority,
 		CreatorId:   task.CreatorID,
+		TeamId:      task.TeamID,
 	}
 }
 
@@ -26,5 +27,6 @@ func PBTaskToTask(task *pb.Task) *models.Task {
 		Deadline:    task.GetDeadline(),
 		Priority:    task.GetPriority(),
 		CreatorID:   task.GetCreatorId(),
+		TeamID:      task.GetTeamId(),
 	}
 }
