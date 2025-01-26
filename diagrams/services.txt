@@ -1,11 +1,11 @@
 auth service:
     - Handles user authentication with login and registration
     - Generates JWT upon successful authorization
-    - Database should store usernames, hashed password, user role
+    - Database should store usernames, hashed password, user role, and user's database ID
 user service:
     - Manages user profiles and settings beyond authentication
     - Database should store name, profile picture, preferences, etc. (Document store)
-task service:
+task service:  /* Implementation without tests completed 1/18/25 */
     - Manages CRUD operations on tasks and task statuses/deadlines
     - Database stores tasks
     - Notifies notification service when tasks are assigned/completed
