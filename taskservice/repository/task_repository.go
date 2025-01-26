@@ -8,17 +8,17 @@ import (
 	"taskservice/models"
 )
 
-type TaskRepo struct {
+type TaskRepository struct {
 	DB *sql.DB
 }
 
-func NewTaskRepo(db *sql.DB) *TaskRepo {
-	return &TaskRepo{
+func NewTaskRepo(db *sql.DB) *TaskRepository {
+	return &TaskRepository{
 		DB: db,
 	}
 }
 
-func (taskrepo *TaskRepo) CreateTask(ctx context.Context, task *models.Task) error {
+func (taskrepo *TaskRepository) CreateTask(ctx context.Context, task *models.Task) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -42,7 +42,7 @@ func (taskrepo *TaskRepo) CreateTask(ctx context.Context, task *models.Task) err
 	return nil
 }
 
-func (taskrepo *TaskRepo) AssignToTask(ctx context.Context, taskAssignee *models.TaskAssignee) error {
+func (taskrepo *TaskRepository) AssignToTask(ctx context.Context, taskAssignee *models.TaskAssignee) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -61,7 +61,7 @@ func (taskrepo *TaskRepo) AssignToTask(ctx context.Context, taskAssignee *models
 	return nil
 }
 
-func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, id uint64, limit uint64, offset uint64) ([]models.Task, error) {
+func (taskrepo *TaskRepository) GetAllAssigned(ctx context.Context, id uint64, limit uint64, offset uint64) ([]models.Task, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -97,7 +97,7 @@ func (taskrepo *TaskRepo) GetAllAssigned(ctx context.Context, id uint64, limit u
 	return tasks, nil
 }
 
-func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, creatorId uint64, limit uint64, offset uint64) ([]models.Task, error) {
+func (taskrepo *TaskRepository) GetAllCreated(ctx context.Context, creatorId uint64, limit uint64, offset uint64) ([]models.Task, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -133,7 +133,7 @@ func (taskrepo *TaskRepo) GetAllCreated(ctx context.Context, creatorId uint64, l
 	return tasks, nil
 }
 
-func (taskrepo *TaskRepo) GetByTaskID(ctx context.Context, id uint64) (*models.Task, error) {
+func (taskrepo *TaskRepository) GetByTaskID(ctx context.Context, id uint64) (*models.Task, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -154,7 +154,7 @@ func (taskrepo *TaskRepo) GetByTaskID(ctx context.Context, id uint64) (*models.T
 	return &task, nil
 }
 
-func (taskrepo *TaskRepo) UpdateTitle(ctx context.Context, id uint64, title string) error {
+func (taskrepo *TaskRepository) UpdateTitle(ctx context.Context, id uint64, title string) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -168,7 +168,7 @@ func (taskrepo *TaskRepo) UpdateTitle(ctx context.Context, id uint64, title stri
 	return nil
 }
 
-func (taskrepo *TaskRepo) UpdateDescription(ctx context.Context, id uint64, description string) error {
+func (taskrepo *TaskRepository) UpdateDescription(ctx context.Context, id uint64, description string) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -182,7 +182,7 @@ func (taskrepo *TaskRepo) UpdateDescription(ctx context.Context, id uint64, desc
 	return nil
 }
 
-func (taskrepo *TaskRepo) UpdateStatus(ctx context.Context, id uint64, status uint8) error {
+func (taskrepo *TaskRepository) UpdateStatus(ctx context.Context, id uint64, status uint8) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -196,7 +196,7 @@ func (taskrepo *TaskRepo) UpdateStatus(ctx context.Context, id uint64, status ui
 	return nil
 }
 
-func (taskrepo *TaskRepo) UpdateDeadline(ctx context.Context, id uint64, deadline *time.Time) error {
+func (taskrepo *TaskRepository) UpdateDeadline(ctx context.Context, id uint64, deadline *time.Time) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -211,7 +211,7 @@ func (taskrepo *TaskRepo) UpdateDeadline(ctx context.Context, id uint64, deadlin
 	return nil
 }
 
-func (taskrepo *TaskRepo) UpdatePriority(ctx context.Context, id uint64, priority bool) error {
+func (taskrepo *TaskRepository) UpdatePriority(ctx context.Context, id uint64, priority bool) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -226,7 +226,7 @@ func (taskrepo *TaskRepo) UpdatePriority(ctx context.Context, id uint64, priorit
 }
 
 // TODO: implement cascading delete to assignee table
-func (taskrepo *TaskRepo) DeleteTask(ctx context.Context, id uint64) error {
+func (taskrepo *TaskRepository) DeleteTask(ctx context.Context, id uint64) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -240,7 +240,7 @@ func (taskrepo *TaskRepo) DeleteTask(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (taskrepo *TaskRepo) UnassignTask(ctx context.Context, id uint64) error {
+func (taskrepo *TaskRepository) UnassignTask(ctx context.Context, id uint64) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
